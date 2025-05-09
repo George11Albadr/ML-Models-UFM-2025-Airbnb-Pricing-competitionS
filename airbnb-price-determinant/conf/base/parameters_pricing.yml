@@ -1,0 +1,127 @@
+# This is a boilerplate parameters config generated for pipeline 'pricing'
+# using Kedro 0.19.12.
+#
+# Documentation for this file format can be found in "Parameters"
+# Link: https://docs.kedro.org/en/0.19.12/configuration/parameters.html
+# conf/base/parameters_pricing.yml
+
+## conf/base/parameters_pricing.yml
+
+# 1. Preprocesamiento
+preprocessing:
+  drop_columns:
+    - id
+    - city
+    - lng
+    - lat
+  imputer_strategy: median
+  num_features:
+    - room_shared
+    - room_private
+    - person_capacity
+    - host_is_superhost
+    - multi
+    - biz
+    - cleanliness_rating
+    - guest_satisfaction_overall
+    - bedrooms
+    - dist
+    - metro_dist
+  categorical_features:
+    - room_type
+    - day_type
+
+# 2. División de datos
+split:
+  test_size: 0.2
+  random_state: 42
+
+# 3. Validación cruzada
+cv:
+  n_splits: 5
+  shuffle: True
+  random_state: 42
+  scoring: neg_mean_squared_error
+
+# 4. Parámetros generales de entrenamiento
+training:
+  random_state: 42
+
+# 5. XGBoost Regressor
+xgb:
+  param_grid:
+    n_estimators: [100, 150, 200]
+    max_depth: [4, 5]
+    learning_rate: [0.01, 0.1]
+    subsample: [0.8, 1.0]
+    colsample_bytree: [0.8, 1.0]
+  fit_params:
+    early_stopping_rounds: 50
+    eval_metric: rmse
+    tree_method: hist
+
+# 6. Random Forest Regressor
+rf:
+  param_grid:
+    n_estimators: [100, 200]
+    max_depth: [5, 10]
+    min_samples_split: [2, 5]
+    min_samples_leaf: [1, 2]
+    max_features: ["auto", "sqrt"]
+
+# 7. Gradient Boosting Regressor
+gb:
+  param_grid:
+    n_estimators: [100, 200]
+    learning_rate: [0.01, 0.1]
+    max_depth: [3, 5]
+    subsample: [0.8, 1.0]
+    loss: ["squared_error"]
+
+# 8. Support Vector Regressor
+svr:
+  param_grid:
+    C: [0.1, 1.0, 10]
+    kernel: ["rbf", "linear"]
+    gamma: ["scale", "auto"]
+
+# 9. SGD Regressor
+sgd:
+  param_grid:
+    loss: ["squared_error"]
+    penalty: ["l2", "elasticnet"]
+    alpha: [0.0001, 0.001]
+    max_iter: [1000]
+
+# 10. K-Neighbors Regressor
+knn:
+  param_grid:
+    n_neighbors: [3, 5, 7]
+    weights: ["uniform", "distance"]
+    leaf_size: [30, 50]
+
+# 11. Polynomial Features
+polynomial:
+  degrees: [1, 2, 3]
+
+# 12. Reducción de Dimensionalidad (PCA)
+dimensionality_reduction:
+  pca_n_components: 0.95
+
+# 13. Decision Tree Regressor
+decision_tree:
+  param_grid:
+    max_depth: [3, 5, 7]
+    min_samples_split: [2, 5]
+    criterion: ["squared_error"]
+
+# 14. Stacking
+stacking:
+  final_estimator: "xgb"     # usar el mejor estimator entrenado en XGBoost
+
+# 15. Rutas de output
+output:
+  train_processed: "data/02_intermediate/train_processed.csv"
+  test_processed:  "data/02_intermediate/test_processed.csv"
+  model_dir:       "data/06_models/"
+  submission:      "data/03_primary/submission.csv"

@@ -1,0 +1,140 @@
+# Here you can define all your data sets by using simple YAML syntax.
+#
+# Documentation for this file format can be found in "The Data Catalog"
+# Link: https://docs.kedro.org/en/stable/data/data_catalog.html
+#
+# We support interacting with a variety of data stores including local file systems, cloud, network and HDFS
+#
+# An example data set definition can look as follows:
+#
+# bikes:
+#   type: pandas.CSVDataset
+#   filepath: "data/01_raw/bikes.csv"
+#
+# weather:
+#   type: spark.SparkDataset
+#   filepath: s3a://your_bucket/data/01_raw/weather*
+#   file_format: csv
+#   credentials: dev_s3
+#   load_args:
+#     header: True
+#     inferSchema: True
+#   save_args:
+#     sep: '|'
+#     header: True
+#
+# scooters:
+#   type: pandas.SQLTableDataset
+#   credentials: scooters_credentials
+#   table_name: scooters
+#   load_args:
+#     index_col: ['name']
+#     columns: ['name', 'gear']
+#   save_args:
+#     if_exists: 'replace'
+#     # if_exists: 'fail'
+#     # if_exists: 'append'
+#
+# The Data Catalog supports being able to reference the same file using two different Dataset implementations
+# (transcoding), templating and a way to reuse arguments that are frequently repeated. See more here:
+# https://docs.kedro.org/en/stable/data/data_catalog.html
+
+# conf/base/catalog.yml
+
+###############################################################################
+#                                RAW DATA                                     #
+###############################################################################
+
+train_raw:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/Train.csv
+  load_args:
+    sep: ","
+    header: 0
+
+test_raw:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/Test.csv
+  load_args:
+    sep: ","
+    header: 0
+
+###############################################################################
+#                           INTERMEDIATE DATA                                 #
+###############################################################################
+
+train_processed:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/train_processed.csv
+
+test_processed:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/test_processed.csv
+
+###############################################################################
+#                             PRIMARY DATA                                    #
+###############################################################################
+
+submission:
+  type: pandas.CSVDataset
+  filepath: data/03_primary/submission.csv
+
+###############################################################################
+#                          FEATURE ENGINEERING DATA                           #
+###############################################################################
+
+features:
+  type: pandas.CSVDataset
+  filepath: data/04_feature/features.csv
+
+###############################################################################
+#                             MODEL INPUT DATA                                #
+###############################################################################
+
+X_train:
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/X_train.csv
+
+y_train:
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/y_train.csv
+
+X_test:
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/X_test.csv
+
+###############################################################################
+#                             TRAINED MODELS                                  #
+###############################################################################
+
+pricing_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/pricing_model.pkl
+
+###############################################################################
+#                         MODEL OUTPUT / METRICS                              #
+###############################################################################
+
+metrics:
+  type: pandas.CSVDataset
+  filepath: data/07_model_output/metrics.csv
+
+###############################################################################
+#                             REPORTING OUTPUTS                               #
+###############################################################################
+# Para gráficos puedes usar BinaryDataSet (requiere instalar kedro-datasets[binary]):
+# boxplot_png:
+#   type: binary.BinaryDataset
+#   filepath: data/08_reporting/boxplot.png
+#
+# roc_curve_png:
+#   type: binary.BinaryDataset
+#   filepath: data/08_reporting/roc_curve.png
+#
+# heatmap_png:
+#   type: binary.BinaryDataset
+#   filepath: data/08_reporting/heatmap.png
+#
+# precision_recall_curve:
+#   type: pandas.CSVDataset
+#   filepath: data/08_reporting/precision_recall_curve.csv
